@@ -22,6 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.anabellolguin.interfaces.Activity_Formulario"
+            android:label="@string/title_activity_activity__formulario" >
+        </activity>
     </application>
 
 </manifest>
