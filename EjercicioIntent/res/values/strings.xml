@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EjercicioIntent</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="buttonForm">Formulario</string>
+    <string name="buttonCamara">Camara</string>
+    <string name="buttonContacto">Contacto</string>
+    <string name="buttonOk">Ok</string>
+    <string name="buttonBack">Back</string>
+    <string name="title_activity_detalle">DetalleActivity</string>
+
+</resources>

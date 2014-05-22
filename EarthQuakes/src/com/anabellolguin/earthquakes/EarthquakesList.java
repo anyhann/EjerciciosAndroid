@@ -7,14 +7,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
 import android.widget.ArrayAdapter;
 
-public class EarthquakesList extends ListFragment {
+public class EarthquakesList extends ListFragment implements DownloadFilesTask.IEarthQuakes{
+	
 
 	public final static String ITEMS_ARRAY = "ITEMS_ARRAY";
 	
 	private EarthQuakeDB db;
-
 	private ArrayAdapter<EarthQuake> aa;
 	private ArrayList<EarthQuake> earthQuakeList;
 
@@ -39,11 +40,24 @@ public class EarthquakesList extends ListFragment {
 	public void onActivityCreated(Bundle inState) {
 		super.onActivityCreated(inState);
 		
+		DownloadFilesTask d = new DownloadFilesTask(getActivity());
+		d.execute("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson");
+		
 		db = EarthQuakeDB.getDB(getActivity());
-		earthQuakeList.addAll(db.getEarthquakesByMagnitude(0));//coge los campos de la BD y los egrega a la lista
+		earthQuakeList.addAll(db.getEarthquakesByMagnitude(0));//coge los campos de la BD y los egrega a la lista filtrados por magnitud
 		aa.notifyDataSetChanged();
 
 	
+	}
+
+
+
+	@Override
+	public void creaLista(ArrayList<EarthQuake> terremotos) {
+		earthQuakeList = new ArrayList<EarthQuake>();
+
+		
+		
 	}
 
 

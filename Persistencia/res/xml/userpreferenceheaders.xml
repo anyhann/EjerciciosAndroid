@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <header
+        android:fragment="com.arkaitzgarro.sharedpreferences.PreferencesFragment"
+        android:summary="Description of these preferences"
+        android:title="My Preferences" />
+
+</PreferenceScreen>

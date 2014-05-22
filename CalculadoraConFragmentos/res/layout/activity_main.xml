@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.anabellolguin.calculadoraconfragmentos.MainActivity"
+    tools:ignore="MergeRootFrame" >
+
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="com.anabellolguin.calculadoraconfragmentos.DisplayFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <fragment
+        android:id="@+id/fragment2"
+        android:name="com.anabellolguin.calculadoraconfragmentos.KeyboardFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
