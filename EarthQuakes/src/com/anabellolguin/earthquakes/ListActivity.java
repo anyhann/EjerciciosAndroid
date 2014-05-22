@@ -129,24 +129,14 @@ public class ListActivity extends Activity {
 			q.setIdStr(terremoto.getString("id"));
 			q.setPlace(terremoto.getJSONObject("properties").getString("place"));
 			q.setTime(new Date(terremoto.getJSONObject("properties").getLong("time")));
+			q.setMagnitude(terremoto.getJSONObject("properties").getDouble("mag"));
 			q.setLongitude(terremoto.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0));
 			q.setLatitude(terremoto.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1));
 			q.setUrl(terremoto.getJSONObject("properties").getString("url"));
 			
 			long id = db.insertEarthQuake(q);
 			
-			/*
-			 * Log.d(DATOS, "\n id=" + features.getString("id") + "\n place=" +
-			 * features.getJSONObject("properties").getInt( "place") +
-			 * " \n time=" + features.getJSONObject("properties").getLong(
-			 * "time") + " \n latitude=" + features.getJSONObject("geometry")
-			 * .getJSONArray("coordinates").getDouble(1) + " \n longitude=" +
-			 * features.getJSONObject("geometry")
-			 * .getJSONArray("coordinates").getDouble(0) + " \n magnitude=" +
-			 * features.getJSONObject("properties").getDouble( "mag") +
-			 * " \n url=" + features.getJSONObject("properties").getString(
-			 * "url"));
-			 */
+			
 		}
 
 	}

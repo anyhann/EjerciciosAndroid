@@ -19,6 +19,7 @@ public class EarthQuakeDB {
 
 	public static final String[] KEYS_ALL = {
 			EarthquakeDatabaseHelper.Columns._ID,
+			EarthquakeDatabaseHelper.Columns.KEY_ID_STR,
 			EarthquakeDatabaseHelper.Columns.KEY_PLACE,
 			EarthquakeDatabaseHelper.Columns.KEY_TIME,
 			EarthquakeDatabaseHelper.Columns.KEY_LOCATION_LAT,

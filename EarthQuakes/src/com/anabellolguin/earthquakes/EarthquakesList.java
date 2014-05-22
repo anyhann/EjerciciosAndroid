@@ -12,47 +12,40 @@ import android.widget.ArrayAdapter;
 public class EarthquakesList extends ListFragment {
 
 	public final static String ITEMS_ARRAY = "ITEMS_ARRAY";
+	
+	private EarthQuakeDB db;
 
-	private ArrayAdapter<String> aa;
-	private ArrayList<String> todoItems;
+	private ArrayAdapter<EarthQuake> aa;
+	private ArrayList<EarthQuake> earthQuakeList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		// Create the array list of to do items
-		todoItems = DB.getEarthquakesByMagnitude(0);//coge los campos de la BD y los egrega a la lista
+		earthQuakeList = new ArrayList<EarthQuake>();
 
 		// Create the array adapter to bind the array to the listview
-		aa = new ArrayAdapter<String>(inflater.getContext(),
-				android.R.layout.simple_list_item_1, todoItems);
+		aa = new ArrayAdapter<EarthQuake>(inflater.getContext(),
+				android.R.layout.simple_list_item_1, earthQuakeList);
 
 		setListAdapter(aa);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
-	public void addItem(String txt) {
-		todoItems.add(0, txt);
-		aa.notifyDataSetChanged();
-	}
+
 
 	@Override
 	public void onActivityCreated(Bundle inState) {
 		super.onActivityCreated(inState);
+		
+		db = EarthQuakeDB.getDB(getActivity());
+		earthQuakeList.addAll(db.getEarthquakesByMagnitude(0));//coge los campos de la BD y los egrega a la lista
+		aa.notifyDataSetChanged();
 
-		if (inState != null) {
-			// AÐadir a la lista
-			todoItems.addAll(inState.getStringArrayList(ITEMS_ARRAY));
-			aa.notifyDataSetChanged();
-		}
+	
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putStringArrayList(ITEMS_ARRAY, todoItems);
-
-		super.onSaveInstanceState(outState);
-	}
 
 
 }
