@@ -35,7 +35,6 @@ public class EarthquakesList extends ListFragment implements DownloadFilesTask.I
 	}
 
 
-
 	@Override
 	public void onActivityCreated(Bundle inState) {
 		super.onActivityCreated(inState);
