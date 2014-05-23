@@ -98,7 +98,7 @@ public class EarthQuakeDB {
 
 		String whereArgs[] = { String.valueOf(magnitude) };
 		Cursor c = this.query(KEYS_ALL,
-				EarthquakeDatabaseHelper.Columns.KEY_MAGNITUDE + " > ?",
+				EarthquakeDatabaseHelper.Columns.KEY_MAGNITUDE + " >= ?",
 				whereArgs, null, null,
 				EarthquakeDatabaseHelper.Columns.KEY_TIME + " DESC");//se ordena de manera descendente y se obtiene el cursor
 

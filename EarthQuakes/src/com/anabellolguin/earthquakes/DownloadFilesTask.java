@@ -20,45 +20,40 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
-public class DownloadFilesTask extends AsyncTask<String, Integer, ArrayList<EarthQuake>> {
+public class DownloadFilesTask extends AsyncTask<String, Void, ArrayList<EarthQuake>> {
+	
+	public interface IEarthQuakes {
+		public void creaLista(ArrayList<EarthQuake> terremotos);
+	}
 	
 	private EarthQuakeDB db;
-	private EarthquakesList listfrag;
-	private ArrayAdapter<EarthQuake> aa;
-	private ArrayList<EarthQuake> earthQuakeList, earthQuakeList2;
+	private ArrayList<EarthQuake> earthQuakeList;
+	private IEarthQuakes fragment;
 	
 
-	public DownloadFilesTask(Context ctx) {
+	public DownloadFilesTask(Context ctx, IEarthQuakes fragment) {
 		db = EarthQuakeDB.getDB(ctx);
+		this.fragment = fragment;
+		
+		earthQuakeList = new ArrayList<EarthQuake>();
 	}
 
 	protected ArrayList<EarthQuake> doInBackground(String... urls) {
 		
 		// TODO: crear una lista de terremotos
-		downloadJSON(urls[0]);
-		earthQuakeList2 = new ArrayList<EarthQuake>();
+		downloadJSON(urls[0]);//envia al metodo downloanJSON la url donde esta elJSON, para que procese los datos
 		
 		// TODO: devolver la lista
-		return earthQuakeList2;
+		return earthQuakeList;//retorna la lista
 
 	}
 	
 	protected void postExecute(ArrayList<EarthQuake> result) {
 		// TODO: actualizar la vista del fragmento y pintarla
-		
-		earthQuakeList2.addAll(0,result);
-		aa.notifyDataSetChanged();
-
-	
-		
+		fragment.creaLista(result);//se le envia el earraylist al fragmento para que lo pinte
 	}
 	
-	public interface IEarthQuakes {
-		
-		public void creaLista(ArrayList<EarthQuake> terremotos);
-			
-		
-	}
+	
 
 	
 	private void downloadJSON(String u) {
@@ -138,14 +133,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, ArrayList<Eart
 			
 			long id = db.insertEarthQuake(q);
 			
-			//meter datos en la lista
-			
-			earthQuakeList = new ArrayList<EarthQuake>();
-
-			earthQuakeList.addAll(db.getEarthquakesByMagnitude(0));//coge los campos de la BD y los egrega a la lista filtrados por magnitud
-			aa.notifyDataSetChanged();
-			
-			
+			if(id != -1) {//si existe el id lo agrega a la lista
+				
+				earthQuakeList.add(q);//agregar datos a la lista
+			}
 		}
 
 	}
