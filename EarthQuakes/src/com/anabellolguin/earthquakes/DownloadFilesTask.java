@@ -15,47 +15,49 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
-public class DownloadFilesTask extends AsyncTask<String, Void, ArrayList<EarthQuake>> {
-	
+public class DownloadFilesTask extends
+		AsyncTask<String, Void, ArrayList<EarthQuake>> {
+
 	public interface IEarthQuakes {
 		public void creaLista(ArrayList<EarthQuake> terremotos);
 	}
-	
+
+	private Context ctx;
 	private EarthQuakeDB db;
 	private ArrayList<EarthQuake> earthQuakeList;
 	private IEarthQuakes fragment;
-	
 
-	public DownloadFilesTask(Context ctx, IEarthQuakes fragment) {
+	public DownloadFilesTask(Context ctx) {
+		this.ctx = ctx;
 		db = EarthQuakeDB.getDB(ctx);
-		this.fragment = fragment;
-		
+
 		earthQuakeList = new ArrayList<EarthQuake>();
 	}
 
 	protected ArrayList<EarthQuake> doInBackground(String... urls) {
-		
+
 		// TODO: crear una lista de terremotos
-		downloadJSON(urls[0]);//envia al metodo downloanJSON la url donde esta elJSON, para que procese los datos
-		
+		downloadJSON(urls[0]);// envia al metodo downloanJSON la url donde esta
+								// elJSON, para que procese los datos
+
 		// TODO: devolver la lista
-		return earthQuakeList;//retorna la lista
+		return earthQuakeList;// retorna la lista
 
 	}
-	
+
 	protected void postExecute(ArrayList<EarthQuake> result) {
 		// TODO: actualizar la vista del fragmento y pintarla
-		fragment.creaLista(result);//se le envia el earraylist al fragmento para que lo pinte
+//		fragment.creaLista(result);// se le envia el earraylist al fragmento
+									// para que lo pinte
 	}
-	
-	
 
-	
 	private void downloadJSON(String u) {
 		JSONObject json = null;
 		try {
@@ -99,7 +101,7 @@ public class DownloadFilesTask extends AsyncTask<String, Void, ArrayList<EarthQu
 			Log.d("INTERNET", "IO	Exception.", e);
 		}
 	}
-	
+
 	private void procesarDatos(JSONObject json) throws JSONException {
 
 		JSONArray array = new JSONArray();// se crea un array de json
@@ -122,20 +124,54 @@ public class DownloadFilesTask extends AsyncTask<String, Void, ArrayList<EarthQu
 													// interesan
 			EarthQuake q = new EarthQuake();
 			JSONObject terremoto = array.getJSONObject(i);
-			
+
 			q.setIdStr(terremoto.getString("id"));
 			q.setPlace(terremoto.getJSONObject("properties").getString("place"));
-			q.setTime(new Date(terremoto.getJSONObject("properties").getLong("time")));
-			q.setMagnitude(terremoto.getJSONObject("properties").getDouble("mag"));
-			q.setLongitude(terremoto.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0));
-			q.setLatitude(terremoto.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1));
+			q.setTime(new Date(terremoto.getJSONObject("properties").getLong(
+					"time")));
+			q.setMagnitude(terremoto.getJSONObject("properties").getDouble(
+					"mag"));
+			q.setLongitude(terremoto.getJSONObject("geometry")
+					.getJSONArray("coordinates").getDouble(0));
+			q.setLatitude(terremoto.getJSONObject("geometry")
+					.getJSONArray("coordinates").getDouble(1));
 			q.setUrl(terremoto.getJSONObject("properties").getString("url"));
-			
-			long id = db.insertEarthQuake(q);
-			
-			if(id != -1) {//si existe el id lo agrega a la lista
-				
-				earthQuakeList.add(q);//agregar datos a la lista
+
+			/*
+			 * long id = db.insertEarthQuake(q);
+			 * 
+			 * if(id != -1) {//si existe el id lo agrega a la lista
+			 * 
+			 * earthQuakeList.add(q);//agregar datos a la lista }
+			 */
+
+			ContentValues newValues = new ContentValues();// se cre un
+															// contenedor de
+															// valores, es como
+															// un bandle en
+															// donde se mete
+															// nombre de la
+															// columna-valor
+
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_TIME, q
+					.getTime()// nombre columna-valor
+					.getTime());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_ID_STR,
+					q.getIdStr());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_PLACE,
+					q.getPlace());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_LOCATION_LAT, q
+					.getLocation().getLatitude());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_LOCATION_LNG, q
+					.getLocation().getLongitude());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_MAGNITUDE,
+					q.getMagnitude());
+			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_URL, q.getUrl());
+
+			ContentResolver cr = this.ctx.getContentResolver();
+			Uri uri = cr.insert(MyContentProvider.CONTENT_URI, newValues);
+			if(uri == null) {
+				Log.d("EARTHQUAKE", "ERROR: " + q.getPlace());
 			}
 		}
 

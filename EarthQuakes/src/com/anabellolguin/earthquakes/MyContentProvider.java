@@ -1,25 +1,31 @@
 package com.anabellolguin.earthquakes;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 public class MyContentProvider extends ContentProvider {
+	private EarthquakeDatabaseHelper myOpenHelper;
 
 	private static final int ALLROWS = 1;
 	private static final int SINGLE_ROW = 2;
 	private static final UriMatcher uriMatcher;
-	
+
 	public static final Uri CONTENT_URI = Uri
 			.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");
+
+	private SQLiteDatabase db;
 
 	// Clase interna para declarar las constantes de columna
 	public static final class Columns implements BaseColumns {
@@ -34,15 +40,69 @@ public class MyContentProvider extends ContentProvider {
 		public static final String KEY_CREATED_AT = "created_at";
 		public static final String KEY_UPDATED_AT = "updated_at";
 	}
-	
+
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI("com.anabellolguin.provider.MyContentProvider",
-                "elements", ALLROWS);
-		uriMatcher.addURI("ccom.anabellolguin.provider.earthquakes","earthquakes/#", SINGLE_ROW);
+				"elements", ALLROWS);
+		uriMatcher.addURI("com.anabellolguin.provider.earthquakes",
+				"earthquakes/#", SINGLE_ROW);
 	}
-	
-	
+
+	@Override
+	public boolean onCreate() {
+		myOpenHelper = new EarthquakeDatabaseHelper(getContext(),
+				EarthquakeDatabaseHelper.DATABASE_NAME, null,
+				EarthquakeDatabaseHelper.DATABASE_VERSION);
+		return true;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] columnas, String where,
+			String[] selectionArgs, String sortOrder) {
+		SQLiteDatabase db;
+
+		try {
+			db = myOpenHelper.getWritableDatabase();
+		} catch (SQLiteException ex) {
+			db = myOpenHelper.getReadableDatabase();
+		}
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			String rowID = uri.getPathSegments().get(1);
+			queryBuilder.appendWhere(Columns._ID + "=" + rowID);
+		default:
+			break;
+		}
+
+		queryBuilder.setTables(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE);
+
+		Cursor cursor = queryBuilder.query(db, columnas, where, selectionArgs,
+				null, null, sortOrder);
+
+		return cursor;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+
+		switch (uriMatcher.match(uri)) {
+		case ALLROWS:
+			return "vnd.android.cursor.dir/vnd.com.anabellolguin.provider.earthquakes";
+		case SINGLE_ROW:
+			return "vnd.android.cursor.item/vnd.com.anabellolguin.provider.earthquakes";
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
+		}
+	}
+
+	@Override
+	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) {
@@ -50,36 +110,21 @@ public class MyContentProvider extends ContentProvider {
 		return 0;
 	}
 
-	@Override
-	public String getType(Uri arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Uri insert(Uri uri, ContentValues values) {
 
-	@Override
-	public boolean onCreate() {
-		EarthquakeDatabaseHelper myOpenHelper = new EarthquakeDatabaseHelper(getContext(),
-		EarthquakeDatabaseHelper.DATABASE_NAME, null, EarthquakeDatabaseHelper.DATABASE_VERSION);
-		return true;
-	}
+		db = myOpenHelper.getWritableDatabase();
+		long id = db.insert(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, null, values);
+		
+		if (id > -1) {
+			Uri insertedId = ContentUris.withAppendedId(CONTENT_URI, id);
+			getContext().getContentResolver().notifyChange(insertedId, null);
+			return insertedId;
+		} else
 
-	@Override
-	public Cursor query(Uri arg0, String[] arg1, String arg2, String[] arg3,
-			String arg4) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-		// TODO Auto-generated method stub
-		return 0;
+			return null;
 	}
 
 	private class EarthquakeDatabaseHelper extends SQLiteOpenHelper {
@@ -112,18 +157,10 @@ public class MyContentProvider extends ContentProvider {
 		}
 
 		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {// metodo
-																					// para
-																					// actualizar
-																					// base
-																					// de
-																					// datos,
-																					// primero
-																					// hay
-																					// que
-																					// cambiar
-																					// la
-																					// version
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			// metodo para actualizar base de datos, primero hay que cambiar la
+			// version
+
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 

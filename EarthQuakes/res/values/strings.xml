@@ -25,8 +25,11 @@
     <string name="prefs_network_desc">Show settings to allow configuration of Wi-Fi.</string>
     <string name="category_network_preferences">Network</string>
     <string name="title_activity_settings_fragment">SettingsFragment</string>
-     <string name="title_activity_list_fragment_">Lista</string>
-    
-    
-    
+    <string name="title_activity_list_fragment_">Lista</string>
+    <string name="title_activity_fila">Fila</string>
+    <string name="textViewMag"></string>
+    <string name="textViewPlace"></string>
+    <string name="textViewTime"></string>
+    <string name="title_activity_detalle">Detalle</string>
+
 </resources>

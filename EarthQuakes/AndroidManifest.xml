@@ -36,8 +36,19 @@
             android:name="com.anabellolguin.earthquakes.SettingsFragment"
             android:label="@string/title_activity_settings_fragment" >
         </activity>
-         <provider android:name=".MyContentProvider" android:authorities="com.anabellolguin.provider.earthquakes"/>
+
+        <provider
+            android:name="com.anabellolguin.earthquakes.MyContentProvider"
+            android:authorities="com.anabellolguin.provider.earthquakes" />
+
+        <activity
+            android:name="com.anabellolguin.earthquakes.Fila"
+            android:label="@string/title_activity_fila" >
+        </activity>
+        <activity
+            android:name="com.anabellolguin.earthquakes.Detalle"
+            android:label="@string/title_activity_detalle" >
+        </activity>
     </application>
-   
 
 </manifest>
