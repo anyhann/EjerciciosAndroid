@@ -1,7 +1,21 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+ 
+<TextView
+    android:id="@+id/Mag"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.anabellolguin.earthquakes.Detalle"
-    tools:ignore="MergeRootFrame" />
+    android:layout_height="wrap_content"
+    android:textSize="20px"
+    android:textStyle="bold" />
+ 
+<TextView
+    android:id="@+id/Place"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12px"
+    android:textStyle="normal" />
+ 
+</LinearLayout>

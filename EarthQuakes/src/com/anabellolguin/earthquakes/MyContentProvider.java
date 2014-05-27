@@ -23,7 +23,7 @@ public class MyContentProvider extends ContentProvider {
 	private static final UriMatcher uriMatcher;
 
 	public static final Uri CONTENT_URI = Uri
-			.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");
+			.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");//esta ruta igual que el Autority /earthquakes nombre de la tabla
 
 	private SQLiteDatabase db;
 
@@ -116,12 +116,12 @@ public class MyContentProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 
 		db = myOpenHelper.getWritableDatabase();
-		long id = db.insert(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, null, values);
+		long id = db.insert(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, null, values); //devuelve un identificador de fila del nuevo insertado autonumerico
 		
 		if (id > -1) {
-			Uri insertedId = ContentUris.withAppendedId(CONTENT_URI, id);
-			getContext().getContentResolver().notifyChange(insertedId, null);
-			return insertedId;
+			Uri insertedId = ContentUris.withAppendedId(CONTENT_URI, id);//construimos el uri 
+			getContext().getContentResolver().notifyChange(insertedId, null);//escucha si hay un cambio y si lo hay crea travez el query
+			return insertedId;// y devolvemos el uri
 		} else
 
 			return null;

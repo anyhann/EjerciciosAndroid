@@ -1,27 +1,42 @@
 package com.anabellolguin.earthquakes;
 
+import java.sql.RowId;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ContentUris;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
-public class Detalle extends Activity {
+public class Detalle extends Activity  implements LoaderCallbacks<Cursor>{
 
+	private static final String TAG = "EARTHQUAKE";
+	public static final Uri CONTENT_URI = Uri
+			.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detalle);
-
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+		
+		long id = getIntent().getLongExtra(EarthquakesList.ID , 0);
+		Log.d(TAG, String.valueOf(id));
+	
 	}
 
 	@Override
@@ -44,21 +59,36 @@ public class Detalle extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_detalle,
-					container, false);
-			return rootView;
-		}
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		
+		String where = MyContentProvider.Columns.KEY_ID_STR + " = ?";
+		String whereArgs[] = { String.valueOf(id) };
+		
+	
+		CursorLoader loader = new CursorLoader(getActivity(), MyContentProvider.CONTENT_URI, MyContentProvider.Columns.KEY_MAGNITUDE,MyContentProvider.Columns.KEY_PLACE , where, whereArgs, null);
+		
+	
+		Uri rowAddress = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, id);
+		
+		
+		return null;
 	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	
 
 }
