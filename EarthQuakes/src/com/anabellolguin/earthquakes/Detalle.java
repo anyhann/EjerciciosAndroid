@@ -1,42 +1,42 @@
 package com.anabellolguin.earthquakes;
 
-import java.sql.RowId;
-
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
+import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.os.Build;
-import android.preference.PreferenceManager;
 
-public class Detalle extends Activity  implements LoaderCallbacks<Cursor>{
+public class Detalle extends Activity implements LoaderCallbacks<Cursor> {
+
+	private long earthquake_id = 0;
+	private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
+	private static final int LOADER_ID = 2;
 
 	private static final String TAG = "EARTHQUAKE";
 	public static final Uri CONTENT_URI = Uri
-			.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");
+
+	.parse("content://com.anabellolguin.provider.earthquakes/earthquakes");
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detalle);
-		
-		long id = getIntent().getLongExtra(EarthquakesList.ID , 0);
-		Log.d(TAG, String.valueOf(id));
-	
+
+		earthquake_id = getIntent().getLongExtra(EarthquakesList.ID, 0);
+		Log.d(TAG, String.valueOf(earthquake_id));
+		mCallbacks = this;
+       //crear un loader nuevo
+		LoaderManager lm = getLoaderManager();
+		lm.initLoader(LOADER_ID, null, mCallbacks);
+
 	}
 
 	@Override
@@ -60,35 +60,49 @@ public class Detalle extends Activity  implements LoaderCallbacks<Cursor>{
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		
-		String where = MyContentProvider.Columns.KEY_ID_STR + " = ?";
-		String whereArgs[] = { String.valueOf(id) };
-		
-	
-		CursorLoader loader = new CursorLoader(getActivity(), MyContentProvider.CONTENT_URI, MyContentProvider.Columns.KEY_MAGNITUDE,MyContentProvider.Columns.KEY_PLACE , where, whereArgs, null);
-		
-	
-		Uri rowAddress = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, id);
-		
-		
-		return null;
+	protected void onResume() {
+		super.onResume();
+
+		getLoaderManager().restartLoader(LOADER_ID, null, mCallbacks);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		// TODO Auto-generated method stub
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		Uri rowAddress = ContentUris.withAppendedId(
+				MyContentProvider.CONTENT_URI, earthquake_id);//se construye la nueva uri y se le grega el ID al final
+
+		String where = MyContentProvider.Columns.KEY_ID_STR + " = ?";
+		String whereArgs[] = { String.valueOf(earthquake_id) };
+
+		CursorLoader loader = new CursorLoader(Detalle.this,
+				rowAddress, MyContentProvider.KEYS_ALL,null, null, null);
+
+		return loader;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		
+		int place_idx = cursor.getColumnIndex(MyContentProvider.Columns.KEY_PLACE);
+		int mag_idx = cursor.getColumnIndex(MyContentProvider.Columns.KEY_MAGNITUDE);
+
+
+		if(cursor.moveToFirst()) {//para obtener datos hay que moverse al primero
+			String place = cursor.getString(place_idx);
+			double magnitud = cursor.getDouble(mag_idx);
+			
+			((TextView) findViewById(R.id.detalle_Mag)).setText(String.valueOf(magnitud));
+			((TextView) findViewById(R.id.detalle_Place)).setText(place);
+			
+			
+		}
+
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
-
-	
 
 }

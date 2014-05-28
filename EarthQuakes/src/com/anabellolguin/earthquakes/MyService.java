@@ -8,56 +8,62 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.IBinder;
 import android.util.Log;
 
-public class DownloadFilesTask extends
-		AsyncTask<String, Void, ArrayList<EarthQuake>> {
+public class MyService extends Service {
+	
+	private String url;
+	
+	
+	@Override	
+	public	void	onCreate()	{	
+			
+	}	
 
-	public interface IEarthQuakes {
-		public void creaLista(ArrayList<EarthQuake> terremotos);
+	
+	@Override	
+	public	int	onStartCommand(Intent	intent,	int	flags,	int	startId)	{	
+					
+					 url = intent.getStringExtra("abre");
+					
+					Thread th1 = new Thread(new Runnable() {
+					       @Override
+					       public void run() {
+					    	   downloadJSON(url);
+					       }
+					       
+					       
+					      }); 
+					th1.start();
+					
+	
+					return	Service.START_NOT_STICKY;	
 	}
 
-	private Context ctx;
-	private EarthQuakeDB db;
-	private ArrayList<EarthQuake> earthQuakeList;
-	private IEarthQuakes fragment;
-
-	public DownloadFilesTask(Context ctx) {
-		this.ctx = ctx;
-		db = EarthQuakeDB.getDB(ctx);
-
-		earthQuakeList = new ArrayList<EarthQuake>();
+	private void startBackgroundTask(Intent intent, int startId) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	protected ArrayList<EarthQuake> doInBackground(String... urls) {
 
-		// TODO: crear una lista de terremotos
-		//downloadJSON(urls[0]);// envia al metodo downloanJSON la url donde esta
-								// elJSON, para que procese los datos
-
-		// TODO: devolver la lista
-		return earthQuakeList;// retorna la lista
-
+	@Override
+	public IBinder onBind(Intent arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
-	protected void postExecute(ArrayList<EarthQuake> result) {
-		// TODO: actualizar la vista del fragmento y pintarla
-//		fragment.creaLista(result);// se le envia el earraylist al fragmento
-									// para que lo pinte
-	}
-
+	
 	private void downloadJSON(String u) {
 		JSONObject json = null;
 		try {
@@ -168,7 +174,7 @@ public class DownloadFilesTask extends
 					q.getMagnitude());
 			newValues.put(EarthquakeDatabaseHelper.Columns.KEY_URL, q.getUrl());
 
-			ContentResolver cr = this.ctx.getContentResolver();
+			ContentResolver cr = MyService.this.getContentResolver();
 			Uri uri = cr.insert(MyContentProvider.CONTENT_URI, newValues);
 			if(uri == null) {
 				Log.d("EARTHQUAKE", "ERROR: " + q.getPlace());
@@ -176,5 +182,7 @@ public class DownloadFilesTask extends
 		}
 
 	}
+
+	
 
 }

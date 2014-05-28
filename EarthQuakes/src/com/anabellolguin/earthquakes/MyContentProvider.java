@@ -40,6 +40,11 @@ public class MyContentProvider extends ContentProvider {
 		public static final String KEY_CREATED_AT = "created_at";
 		public static final String KEY_UPDATED_AT = "updated_at";
 	}
+	
+	public static final String[] KEYS_ALL = { Columns._ID, Columns.KEY_ID_STR,
+		Columns.KEY_PLACE, Columns.KEY_TIME, Columns.KEY_LOCATION_LAT,
+		Columns.KEY_LOCATION_LNG, Columns.KEY_MAGNITUDE, Columns.KEY_URL };
+
 
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -81,6 +86,8 @@ public class MyContentProvider extends ContentProvider {
 
 		Cursor cursor = queryBuilder.query(db, columnas, where, selectionArgs,
 				null, null, sortOrder);
+		
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
 		return cursor;
 	}
