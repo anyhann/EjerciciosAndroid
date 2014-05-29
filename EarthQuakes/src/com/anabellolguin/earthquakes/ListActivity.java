@@ -37,7 +37,6 @@ public class ListActivity extends Activity {
 
 	}
 
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

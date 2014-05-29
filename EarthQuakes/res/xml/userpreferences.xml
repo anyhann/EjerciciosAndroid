@@ -3,7 +3,7 @@
     
     <PreferenceCategory android:title="@string/category_network" >
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="@string/PREF_AUTO_UPDATE"
             android:summary="@string/auto_update_desc"
             android:title="@string/auto_update_prompt" />
